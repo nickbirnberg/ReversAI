@@ -14,6 +14,8 @@ function init() {
     var pieces = [];
     stage.addChild(container);
 
+    initGame();
+
     // set initial game pieces
     var board = Game.board;
     for(var i = 0; i < board.length; i++) {
