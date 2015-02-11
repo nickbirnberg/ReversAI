@@ -14,40 +14,25 @@ function init() {
     var pieces = [];
     stage.addChild(container);
 
-    initGame();
 
-    // set initial game pieces
-    var board = Game.board;
-    for(var i = 0; i < board.length; i++) {
+    // create initial game pieces
+    for(var i = 0; i < 8; i++) {
         pieces[i] = [];
-        for(var j = 0; j < board.length; j++) {
+        for(var j = 0; j < 8; j++) {
             var piece = new PIXI.Sprite(redTexture);
             piece.position.x = 64 * j;
             piece.position.y = 64 * i;
-            // red piece
-            if(board[i][j] == 1) {
-                piece.setTexture(redTexture);
-            }
-            // black piece
-            else if(board[i][j] == 2) {
-                piece.setTexture(blackTexture);
-            }
-            // possible move
-            else if(board[i][j] == 3) {
-                piece.setTexture(blackTexture);
-                piece.alpha = 0.3;
-                piece.buttonMode = true;
-                piece.interactive = true;
-            }
-            // no piece
-            else {
-                piece.alpha = 0;
-            }
 
             pieces[i][j] = piece;
             container.addChild(piece);
         }
     }
+
+    // initialize game board and render it
+    initGame();
+    var board = Game.board;
+    renderBoard(board);
+
     // add the renderer view element to the DOM
     document.body.appendChild(renderer.view);
     requestAnimFrame( animate );
@@ -57,25 +42,33 @@ function init() {
         // render the stage
         renderer.render(stage);
     }
-
-    function showPossibleMoves(locs) {
-        locs.forEach(function(loc) {
-            pieces[loc[0]][loc[1]].setTexture(blackTexture);
-            pieces[loc[0]][loc[1]].alpha = 0.3;
-        });
-    }
-
-    function drawAIPieces(locs) {
-        locs.forEach(function(loc) {
-            pieces[loc[0]][loc[1]].setTexture(redTexture);
-            pieces[loc[0]][loc[1]].alpha = 1;
-        });
-    }
-
-    function drawPlayerPieces(locs) {
-        locs.forEach(function(loc) {
-            pieces[loc[0]][loc[1]].setTexture(blackTexture);
-            pieces[loc[0]][loc[1]].alpha = 1;
-        });
+    function renderBoard(gameBoard) {
+        for(var i = 0; i < board.length; i++) {
+            for(var j = 0; j < board.length; j++) {
+                var piece = pieces[i][j];
+                // red piece
+                if(gameBoard[i][j] == 1) {
+                    piece.setTexture(redTexture);
+                }
+                // black piece
+                else if(gameBoard[i][j] == 2) {
+                    piece.setTexture(blackTexture);
+                }
+                // possible human move
+                else if(gameBoard[i][j] == 3) {
+                    piece.setTexture(blackTexture);
+                    piece.alpha = 0.3;
+                }
+                // possible AI move
+                else if(gameBoard[i][j] == 4) {
+                    piece.setTexture(redTexture);
+                    piece.alpha = 0.3;
+                }
+                // no piece
+                else {
+                    piece.alpha = 0;
+                }
+            }
+        }
     }
 }

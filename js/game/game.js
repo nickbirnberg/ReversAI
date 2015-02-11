@@ -4,6 +4,8 @@ Game = (function () {
      * 0 = empty
      * 1 = AI Piece
      * 2 = Player Piece
+     * 3 = Possible Player Moves
+     * 4 = Possible AI Moves
      */
     var board = [[0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0],
