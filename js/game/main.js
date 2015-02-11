@@ -22,8 +22,8 @@ function init() {
         pieces[i] = [];
         for(var j = 0; j < board.length; j++) {
             var piece = new PIXI.Sprite(redTexture);
-            piece.position.x = 64 * i;
-            piece.position.y = 64 * j;
+            piece.position.x = 64 * j;
+            piece.position.y = 64 * i;
             // red piece
             if(board[i][j] == 1) {
                 piece.setTexture(redTexture);
