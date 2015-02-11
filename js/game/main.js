@@ -10,10 +10,7 @@ function init() {
     var redTexture = new PIXI.Texture.fromImage("img/red.png");
     var blackTexture = new PIXI.Texture.fromImage("img/black.png");
     // container to hold game Sprites
-    var container = new PIXI.SpriteBatch();
     var pieces = [];
-    stage.addChild(container);
-
 
     // create initial game pieces
     for(var i = 0; i < 8; i++) {
@@ -22,9 +19,10 @@ function init() {
             var piece = new PIXI.Sprite(redTexture);
             piece.position.x = 64 * j;
             piece.position.y = 64 * i;
+            piece.buttonMode = true;
 
             pieces[i][j] = piece;
-            container.addChild(piece);
+            stage.addChild(piece);
         }
     }
 
@@ -42,10 +40,13 @@ function init() {
         // render the stage
         renderer.render(stage);
     }
+
     function renderBoard(gameBoard) {
         for(var i = 0; i < board.length; i++) {
             for(var j = 0; j < board.length; j++) {
                 var piece = pieces[i][j];
+                // remove interactiveness
+                piece.interactive = false;
                 // red piece
                 if(gameBoard[i][j] == 1) {
                     piece.setTexture(redTexture);
@@ -58,6 +59,8 @@ function init() {
                 else if(gameBoard[i][j] == 3) {
                     piece.setTexture(blackTexture);
                     piece.alpha = 0.3;
+                    piece.interactive = true;
+                    piece.mousedown = mouseDownFunc(i,j);
                 }
                 // possible AI move
                 else if(gameBoard[i][j] == 4) {
@@ -70,5 +73,11 @@ function init() {
                 }
             }
         }
+    }
+
+    function mouseDownFunc(i, j) {
+        return function(){
+            playerMove(j,i);
+        };
     }
 }
