@@ -12,7 +12,7 @@ Game = (function () {
                 [0, 0, 0, 2, 1, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0]
     ];
 
     var currentPlayer = 2;
@@ -73,6 +73,50 @@ function isSpaceValid(currentPlayer,x,y,board){
             for (i = (y + 1); i < 8; i++) {
                 if (board[x][i] == 0) break;
                 if (board[x][i] == currentPlayer) {
+                    testMove = true;
+                }
+            }
+        }
+        //diag up right
+        if(x != 7 && y != 0 && board[x+1][y-1] != currentPlayer){
+
+            for (i = 1; x+i < 8 && y-i >=0; ++i) {
+
+                if (board[x+i][y-i] == 0) break;
+                if (board[x+i][y-i] == currentPlayer) {
+                    testMove = true;
+                }
+            }
+        }
+        //diag up left
+        if(x != 0 && y != 0 && board[x-1][y-1] != currentPlayer){
+
+            for (i = 1; x-i >=0 && y-i >=0; ++i) {
+
+                if (board[x-i][y-i] == 0) break;
+                if (board[x-i][y-i] == currentPlayer) {
+                    testMove = true;
+                }
+            }
+        }
+        //diag down right
+        if(x != 7 && y != 7 && board[x+1][y+1] != currentPlayer){
+
+            for (i = 1; x+i < 8 && y+i <8; ++i) {
+
+                if (board[x+i][y+i] == 0) break;
+                if (board[x+i][y+i] == currentPlayer) {
+                    testMove = true;
+                }
+            }
+        }
+        //diag down left
+        if(x != 0 && y != 7 && board[x-1][y+1] != currentPlayer){
+
+            for (i = 1; x-i >=0 && y+i <8; ++i) {
+
+                if (board[x-i][y+i] == 0) break;
+                if (board[x-i][y+i] == currentPlayer) {
                     testMove = true;
                 }
             }
