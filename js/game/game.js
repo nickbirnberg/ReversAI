@@ -26,6 +26,10 @@ Game = (function () {
 
 })();
 
+function playerMove(coordX, coordY) {
+    console.log("Clicked on: " + coordX + "," + coordY);
+}
+
 function findMovesPlayer(board,currentPlayer){
     var moves = [];
     for(var x =0; x<8; x++){
