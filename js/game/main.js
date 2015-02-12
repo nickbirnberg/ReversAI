@@ -28,8 +28,7 @@ function init() {
 
     // initialize game board and render it
     initGame();
-    var board = Game.board;
-    renderBoard(board);
+    renderBoard();
 
     // add the renderer view element to the DOM
     document.body.appendChild(renderer.view);
@@ -41,19 +40,22 @@ function init() {
         renderer.render(stage);
     }
 
-    function renderBoard(gameBoard) {
-        for(var i = 0; i < board.length; i++) {
-            for(var j = 0; j < board.length; j++) {
+    function renderBoard() {
+        var gameBoard = Game.board;
+        for(var i = 0; i < 8; i++) {
+            for(var j = 0; j < 8; j++) {
                 var piece = pieces[i][j];
                 // remove interactiveness
                 piece.interactive = false;
                 // red piece
                 if(gameBoard[i][j] == 1) {
                     piece.setTexture(redTexture);
+                    piece.alpha = 1;
                 }
                 // black piece
                 else if(gameBoard[i][j] == 2) {
                     piece.setTexture(blackTexture);
+                    piece.alpha = 1;
                 }
                 // possible human move
                 else if(gameBoard[i][j] == 3) {
@@ -77,7 +79,7 @@ function init() {
 
     function mouseDownFunc(i, j) {
         return function(){
-            playerMove(j,i);
+            playerMove(i, j, renderBoard);
         };
     }
 }

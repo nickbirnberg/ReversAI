@@ -26,8 +26,10 @@ Game = (function () {
 
 })();
 
-function playerMove(coordX, coordY) {
-    console.log("Clicked on: " + coordX + "," + coordY);
+function playerMove(coordX, coordY, renderFunc) {
+    Game.board[coordX][coordY] = 2;
+    /* Make AI Move and Re-Render Board with Player Moves */
+    renderFunc();
 }
 
 function findMovesPlayer(board,currentPlayer){
