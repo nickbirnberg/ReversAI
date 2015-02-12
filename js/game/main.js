@@ -1,3 +1,8 @@
+var UserSettings = function () {
+    this.depth = 4;
+};
+var globalSettings = new UserSettings();
+
 function init() {
     var stage = new PIXI.Stage(0x66FF99);
     var renderer = PIXI.autoDetectRenderer(512, 512);
@@ -9,6 +14,9 @@ function init() {
     var blackTexture = new PIXI.Texture.fromImage("img/black.png");
     // container to hold game Sprites
     var pieces = [];
+    // gui for user input
+    var gui = new dat.GUI();
+    gui.add(globalSettings, 'depth');
 
     // create initial game pieces
     createPieces();
