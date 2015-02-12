@@ -42,11 +42,7 @@ Game = (function () {
     function playerMove(coordX, coordY, color, state) {
         removeOldMoves(state);
         state.board[coordX][coordY] = color;
-        if (color == Color.BLACK)
-            state.currentPlayer = Color.RED;
-        else
-            state.currentPlayer = Color.BLACK;
-        /* Make AI Move and Re-Render Board with Player Moves */
+        capturePieces(coordX, coordY, state);
         findNewMoves(state);
         displayMoves(state);
         render(state);
@@ -61,6 +57,100 @@ Game = (function () {
                     moves.push([x, y]);
                 }
             }
+        }
+    }
+
+    function capturePieces(x, y, state) {
+        var board = state.board;
+        var currentPlayer = state.currentPlayer;
+        // left
+        for (var i = 2; y - i > -1; i++) {
+            if (board[x][y - i] == currentPlayer) {
+                while (i != 0) {
+                    board[x][y - i] = currentPlayer;
+                    i--;
+                }
+                break;
+            }
+        }
+        // right
+        for (var i = 2; y + i < 8; i++) {
+            if (board[x][y + i] == currentPlayer) {
+                while (i != 0) {
+                    board[x][y + i] = currentPlayer;
+                    i--;
+                }
+                break;
+            }
+        }
+        // up
+        for (var i = 2; x - i > -1; i++) {
+            if (board[x - i][y] == currentPlayer) {
+                while (i != 0) {
+                    board[x - i][y] = currentPlayer;
+                    i--;
+                }
+                break;
+            }
+        }
+        // down
+        for (var i = 2; x + i < 8; i++) {
+            if (board[x + i][y] == currentPlayer) {
+                while (i != 0) {
+                    board[x + i][y] = currentPlayer;
+                    i--;
+                }
+                break;
+            }
+        }
+        // left up
+        for (var i = 2; y - i > -1 && x - i > -1; i++) {
+            if (board[x - i][y - i] == currentPlayer) {
+                while (i != 0) {
+                    board[x - i][y - i] = currentPlayer;
+                    i--;
+                }
+                break;
+            }
+        }
+        // right up
+        for (var i = 2; y + i < 8 && x - i > -1; i++) {
+            if (board[x - i][y + i] == currentPlayer) {
+                while (i != 0) {
+                    board[x - i][y + i] = currentPlayer;
+                    i--;
+                }
+                break;
+            }
+        }
+        // down right
+        for (var i = 2; y + i < 8 && x + i < 8; i++) {
+            if (board[x + i][y + i] == currentPlayer) {
+                while (i != 0) {
+                    board[x + i][y + i] = currentPlayer;
+                    i--;
+                }
+                break;
+            }
+        }
+        // down left
+        for (var i = 2; y - i > -1 && x + i < 8; i++) {
+            if (board[x + i][y - i] == currentPlayer) {
+                while (i != 0) {
+                    board[x + i][y - i] = currentPlayer;
+                    i--;
+                }
+                break;
+            }
+        }
+        // switch opponents
+        if (currentPlayer == Color.BLACK) {
+            state.currentPlayer = Color.RED;
+            state.opponent = Color.BLACK;
+        }
+        else {
+            state.currentPlayer = Color.BLACK;
+            state.opponent = Color.RED;
         }
     }
 
@@ -228,6 +318,6 @@ function State() {
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0]
         ];
-        this.currentPlayer= null;
-        this.opponent = null;
-    }
+    this.currentPlayer = null;
+    this.opponent = null;
+}
