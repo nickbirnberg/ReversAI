@@ -1,18 +1,20 @@
 Game = (function () {
-    /* Board representing game state.
-     * 0 = empty
-     * 1 = AI Piece
-     * 2 = Player Piece
-     * 3 = Possible Player Moves
-     * 4 = Possible AI Moves
-     */
+    var Color = {
+        EMPTY: 0,
+        RED: 1,
+        BLACK: 2,
+        RED_MOVE: 3,
+        BLACK_MOVE: 4
+    };
+
     var board;
     var currentPlayer;
     var render;
 
     return {
         init: init,
-        playerMove: playerMove
+        playerMove: playerMove,
+        Color: Color
     };
 
     function init(renderFunc) {
@@ -26,7 +28,7 @@ Game = (function () {
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0]
         ];
-        currentPlayer = 2;
+        currentPlayer = Color.BLACK;
         render = renderFunc;
         var moves = findMoves();
         displayMoves(moves);
@@ -34,7 +36,7 @@ Game = (function () {
     }
 
     function playerMove(coordX, coordY) {
-        board[coordX][coordY] = 2;
+        board[coordX][coordY] = Color.BLACK;
         /* Make AI Move and Re-Render Board with Player Moves */
         render(board);
     }
@@ -141,7 +143,10 @@ Game = (function () {
 
     function displayMoves(moves) {
         moves.forEach(function (move) {
-            board[move[0]][move[1]] = 3;
+            if(currentPlayer == Color.BLACK)
+                board[move[0]][move[1]] = Color.BLACK_MOVE;
+            else
+                board[move[0]][move[1]] = Color.RED_MOVE;
         });
     }
 })();

@@ -47,24 +47,24 @@ function init() {
                 // remove interactiveness
                 piece.interactive = false;
                 // red piece
-                if (gameBoard[i][j] == 1) {
+                if (gameBoard[i][j] == Game.Color.RED) {
                     piece.setTexture(redTexture);
                     piece.alpha = 1;
                 }
                 // black piece
-                else if (gameBoard[i][j] == 2) {
+                else if (gameBoard[i][j] == Game.Color.BLACK) {
                     piece.setTexture(blackTexture);
                     piece.alpha = 1;
                 }
                 // possible human move
-                else if (gameBoard[i][j] == 3) {
+                else if (gameBoard[i][j] == Game.Color.BLACK_MOVE) {
                     piece.setTexture(blackTexture);
                     piece.alpha = 0.3;
                     piece.interactive = true;
                     piece.mousedown = mouseDownFunc(i, j);
                 }
                 // possible AI move
-                else if (gameBoard[i][j] == 4) {
+                else if (gameBoard[i][j] == Game.Color.RED_MOVE) {
                     piece.setTexture(redTexture);
                     piece.alpha = 0.3;
                 }
