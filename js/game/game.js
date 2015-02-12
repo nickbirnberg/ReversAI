@@ -65,7 +65,12 @@ Game = (function () {
     }
 
     function capturePieces(x, y, state) {
-        var board = state.board;
+        var newState = new State();
+        newState.board =  copyBoard(state.board);
+        newState.currentPlayer = state.currentPlayer;
+        newState.opponent = state.opponent;
+        newState.cachedMoves = [];
+        var board = newState.board;
         var currentPlayer = state.currentPlayer;
         // left
         for (var i = 2; y - i > -1; i++) {
@@ -156,6 +161,7 @@ Game = (function () {
             state.currentPlayer = Color.BLACK;
             state.opponent = Color.RED;
         }
+        return newState;
     }
 
     function isSpaceValid(x, y, board, currentPlayer) {
