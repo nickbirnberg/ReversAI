@@ -47,32 +47,30 @@ function init() {
                 // remove interactiveness
                 piece.interactive = false;
                 // red piece
-                if (gameBoard[i][j] == Game.Color.RED) {
-                    piece.setTexture(redTexture);
-                    piece.alpha = 1;
-                }
-                // black piece
-                else if (gameBoard[i][j] == Game.Color.BLACK) {
-                    piece.setTexture(blackTexture);
-                    piece.alpha = 1;
-                }
-                // possible human move
-                else if (gameBoard[i][j] == Game.Color.BLACK_MOVE) {
-                    piece.setTexture(blackTexture);
-                    piece.alpha = 0.3;
-                    piece.interactive = true;
-                    piece.mousedown = mouseDownFunc(i, j, Game.Color.BLACK);
-                }
-                // possible AI move
-                else if (gameBoard[i][j] == Game.Color.RED_MOVE) {
-                    piece.setTexture(redTexture);
-                    piece.alpha = 0.3;
-                    piece.interactive = true;
-                    piece.mousedown = mouseDownFunc(i, j, Game.Color.RED);
-                }
-                // no piece
-                else {
-                    piece.alpha = 0;
+                var pieceColor = gameBoard[i][j];
+                switch (pieceColor) {
+                    case Game.Color.RED:
+                        piece.setTexture(redTexture);
+                        piece.alpha = 1;
+                        break;
+                    case Game.Color.BLACK:
+                        piece.setTexture(blackTexture);
+                        piece.alpha = 1;
+                        break;
+                    case Game.Color.BLACK_MOVE:
+                        piece.setTexture(blackTexture);
+                        piece.alpha = 0.3;
+                        piece.interactive = true;
+                        piece.mousedown = mouseDownFunc(i, j, Game.Color.BLACK);
+                        break;
+                    case Game.Color.RED_MOVE:
+                        piece.setTexture(redTexture);
+                        piece.alpha = 0.3;
+                        piece.interactive = true;
+                        piece.mousedown = mouseDownFunc(i, j, Game.Color.RED);
+                        break;
+                    default:
+                        piece.alpha = 0;
                 }
             }
         }
