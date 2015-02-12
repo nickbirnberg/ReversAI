@@ -52,16 +52,30 @@ Game = (function () {
             if (newMove != null) {
                 var renderState = makeAiMove(newMove, newState);
                 renderState.cachedMoves = findNewMoves(renderState, renderState.currentPlayer);
-                displayMoves(renderState);
-                render(renderState);
+                if(renderState.cachedMoves.length !=0){
+                    displayMoves(renderState);
+                    render(renderState);
+                }
+                else{
+                    userCantPlay =1;
+                    alert("You Pass");
+                    var passedState = new State();
+                    passedState.board =  copyBoard(renderState.board);
+                    passedState.currentPlayer = renderState.currentPlayer;
+                    passedState.opponent = renderState.opponent;
+                    passedState.cachedMoves = [];
+                    state = passedState;
+                    displayMoves(state);
+                    render(state);
+                }
             }
             else{
                 state.cachedMoves = findNewMoves(state, state.currentPlayer);
                 if(state.cachedMoves.length == 0){
                     alert("GAME OVER")
                 }
-                displayMoves(state)
-                render(state)
+                displayMoves(state);
+                render(state);
             }
 
         }while(userCantPlay)
