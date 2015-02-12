@@ -15,8 +15,8 @@ Game = (function () {
         init: init,
         playerMove: playerMove,
         Color: Color,
-        findNewMoves: findNewMoves
-
+        findNewMoves: findNewMoves,
+        capturePieces: capturePieces
     };
 
     function init(renderFunc) {
@@ -45,10 +45,12 @@ Game = (function () {
         removeOldMoves(state);
         state.board[coordX][coordY] = color;
         state.cachedMoves = findNewMoves(state, state.currentPlayer);
-        capturePieces(coordX, coordY, state);
-        findNewMoves(state, state.currentPlayer);
-        displayMoves(state);
-        render(state);
+        var newState = capturePieces(coordX, coordY, state);
+        var newMove = bestMove(newState,newState.currentPlayer,4);
+        var renderState = makeAiMove(newMove,newState);
+        renderState.cachedMoves = findNewMoves(renderState, renderState.currentPlayer);
+        displayMoves(renderState);
+        render(renderState);
     }
 
     function findNewMoves(state, player) {
@@ -62,6 +64,24 @@ Game = (function () {
             }
         }
         return moves;
+    }
+
+    function makeAiMove(move, state){
+        clearSuggestions(state);
+        state.board[move[0]][move[1]] = state.currentPlayer;
+        var newState = capturePieces(move[0], move[1], state);
+        return newState;
+    }
+
+    function clearSuggestions(state){
+        for (var x = 0; x < 8; x++) {
+            for (var y = 0; y < 8; y++) {
+                if (state.board[x][y] != 1 && state.board[x][y] !=2)
+                {
+                    state.board[x][y] = Color.EMPTY;
+                }
+            }
+        }
     }
 
     function capturePieces(x, y, state) {
@@ -154,12 +174,12 @@ Game = (function () {
         }
         // switch opponents
         if (currentPlayer == Color.BLACK) {
-            state.currentPlayer = Color.RED;
-            state.opponent = Color.BLACK;
+            newState.currentPlayer = Color.RED;
+            newState.opponent = Color.BLACK;
         }
         else {
-            state.currentPlayer = Color.BLACK;
-            state.opponent = Color.RED;
+            newState.currentPlayer = Color.BLACK;
+            newState.opponent = Color.RED;
         }
         return newState;
     }
@@ -267,6 +287,7 @@ Game = (function () {
 
     function bestMove(state, player, depth){
         var moves = miniMax(state, player, depth, 0);
+        return moves[1];
     }
 
     function copyBoard(currBoard){

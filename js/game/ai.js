@@ -1,16 +1,11 @@
-/**
- * Created by Phillip on 2/12/2015.
- */
-
-
 function scoreMove(state, player){
     var opp = null;
     if(player == Game.Color.BLACK)
     {
-        opp == Game.Color.RED;
+        opp = Game.Color.RED;
     }
     else{
-        opp == Game.Color.BLACK;
+        opp = Game.Color.BLACK;
     }
     var myCorners = numberCorners(state,player);
     var oppCorners = numberCorners(state,opp);
@@ -21,9 +16,9 @@ function scoreMove(state, player){
     var pieceScore = 100 * (myPieces-oppPieces)/64;
 
     var myMoves = Game.findNewMoves(state,player);
-    var oppMoves = Game.findNewMoves(state,player);
+    var oppMoves = Game.findNewMoves(state,opp);
     var numMovesTotal = myMoves.length+oppMoves.length;
-    var moveScore = total ? (myMoves.length*250)/numMovesTotal : 0;
+    var moveScore = numMovesTotal ? (myMoves.length*250)/numMovesTotal : 0;
 
     return moveScore+ pieceScore + cornerScore;
 }
@@ -64,17 +59,19 @@ function miniMax(state, currentPlayer, maxDepth, currentDepth){
         return [scoreMove(state, currentPlayer), null]
     }
     state.cachedMoves.forEach(function (move) {
-        //add do move here. return with switched player and new board after moves.
-        var nextState = null;
+
+        var nextState = Game.capturePieces(move[0],move[1],state);
         var next = miniMax(nextState, currentPlayer, maxDepth, currentDepth+1)
+        //min value situation
         if(nextState.currentPlayer == currentPlayer){
-            if(next[0]>bestScore){
+            if(next[0]<bestScore){
                 bestScore = next[0];
                 bestMove = move;
             }
         }
+        //max value situation
         else{
-            if(next[0]<bestScore){
+            if(next[0]>bestScore){
                 bestScore = next[0];
                 bestMove = move;
             }
