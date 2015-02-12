@@ -45,12 +45,28 @@ Game = (function () {
         removeOldMoves(state);
         state.board[coordX][coordY] = color;
         state.cachedMoves = findNewMoves(state, state.currentPlayer);
-        var newState = capturePieces(coordX, coordY, state);
-        var newMove = bestMove(newState,newState.currentPlayer,4);
-        var renderState = makeAiMove(newMove,newState);
-        renderState.cachedMoves = findNewMoves(renderState, renderState.currentPlayer);
-        displayMoves(renderState);
-        render(renderState);
+        do {
+            var userCantPlay =0;
+            var newState = capturePieces(coordX, coordY, state);
+            var newMove = bestMove(newState, newState.currentPlayer, 4);
+            if (newMove != null) {
+                var renderState = makeAiMove(newMove, newState);
+                renderState.cachedMoves = findNewMoves(renderState, renderState.currentPlayer);
+                displayMoves(renderState);
+                render(renderState);
+            }
+            else{
+                state.cachedMoves = findNewMoves(state, state.currentPlayer);
+                if(state.cachedMoves.length == 0){
+                    alert("GAME OVER")
+                }
+                displayMoves(state)
+                render(state)
+            }
+
+        }while(userCantPlay)
+
+
     }
 
     function findNewMoves(state, player) {
