@@ -14,7 +14,9 @@ Game = (function () {
     return {
         init: init,
         playerMove: playerMove,
-        Color: Color
+        Color: Color,
+        findNewMoves: findNewMoves
+
     };
 
     function init(renderFunc) {
@@ -34,7 +36,7 @@ Game = (function () {
         currentState.board = copyBoard(board);
         currentState.currentPlayer = Color.BLACK;
         currentState.opponent = Color.RED;
-        findNewMoves(currentState);
+        findNewMoves(currentState, currentState.currentPlayer);
         displayMoves(currentState);
         render(currentState);
     }
@@ -42,26 +44,32 @@ Game = (function () {
     function playerMove(coordX, coordY, color, state) {
         removeOldMoves(state);
         state.board[coordX][coordY] = color;
-        if (color == Color.BLACK)
+        if (color == Color.BLACK){
             state.currentPlayer = Color.RED;
-        else
+            state.opponent = Color.BLACK;
+        }
+        else{
             state.currentPlayer = Color.BLACK;
+            state.opponent = Color.RED;
+        }
+
         /* Make AI Move and Re-Render Board with Player Moves */
-        findNewMoves(state);
+        state.cachedMoves = findNewMoves(state, state.currentPlayer);
         displayMoves(state);
         render(state);
     }
 
-    function findNewMoves(state) {
+    function findNewMoves(state, player) {
         moves = [];
         for (var x = 0; x < 8; x++) {
             for (var y = 0; y < 8; y++) {
                 if (state.board[x][y] != 0) continue;
-                if (isSpaceValid(x, y, state.board, state.currentPlayer) == true) {
+                if (isSpaceValid(x, y, state.board, player) == true) {
                     moves.push([x, y]);
                 }
             }
         }
+        return moves;
     }
 
     function isSpaceValid(x, y, board, currentPlayer) {
@@ -187,34 +195,6 @@ Game = (function () {
         }
         return clone;
     }
-
-    function scoreMove(state){
-
-
-    }
-
-    function numberPieces(state){
-        var c = 0;
-        for (var x = 0; x < 8; x++) {
-            for (var y = 0; y < 8; y++) {
-                if (state.board[x][y] == state.currentPlayer) c++;
-            }
-        }
-        return c;
-    }
-
-    function miniMax(state, currentPlayer, maxDepth, currentDepth){
-        if(currentDepth == maxDepth){
-            return [scoreMove(state),null]
-        }
-        var bestScore;
-        if(state.currentPlayer == currentPlayer){
-            bestScore = -300000;
-        }
-        else{
-            bestScore = 300000;
-        }
-    }
 })();
 
 function State() {
@@ -230,4 +210,5 @@ function State() {
         ];
         this.currentPlayer= null;
         this.opponent = null;
+        this.cachedMoves = null;
     }
