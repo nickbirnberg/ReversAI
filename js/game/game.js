@@ -44,17 +44,9 @@ Game = (function () {
     function playerMove(coordX, coordY, color, state) {
         removeOldMoves(state);
         state.board[coordX][coordY] = color;
-        if (color == Color.BLACK){
-            state.currentPlayer = Color.RED;
-            state.opponent = Color.BLACK;
-        }
-        else{
-            state.currentPlayer = Color.BLACK;
-            state.opponent = Color.RED;
-        }
-
-        /* Make AI Move and Re-Render Board with Player Moves */
         state.cachedMoves = findNewMoves(state, state.currentPlayer);
+        capturePieces(coordX, coordY, state);
+        findNewMoves(state, state.currentPlayer);
         displayMoves(state);
         render(state);
     }
@@ -70,6 +62,100 @@ Game = (function () {
             }
         }
         return moves;
+    }
+
+    function capturePieces(x, y, state) {
+        var board = state.board;
+        var currentPlayer = state.currentPlayer;
+        // left
+        for (var i = 2; y - i > -1; i++) {
+            if (board[x][y - i] == currentPlayer) {
+                while (i != 0) {
+                    board[x][y - i] = currentPlayer;
+                    i--;
+                }
+                break;
+            }
+        }
+        // right
+        for (var i = 2; y + i < 8; i++) {
+            if (board[x][y + i] == currentPlayer) {
+                while (i != 0) {
+                    board[x][y + i] = currentPlayer;
+                    i--;
+                }
+                break;
+            }
+        }
+        // up
+        for (var i = 2; x - i > -1; i++) {
+            if (board[x - i][y] == currentPlayer) {
+                while (i != 0) {
+                    board[x - i][y] = currentPlayer;
+                    i--;
+                }
+                break;
+            }
+        }
+        // down
+        for (var i = 2; x + i < 8; i++) {
+            if (board[x + i][y] == currentPlayer) {
+                while (i != 0) {
+                    board[x + i][y] = currentPlayer;
+                    i--;
+                }
+                break;
+            }
+        }
+        // left up
+        for (var i = 2; y - i > -1 && x - i > -1; i++) {
+            if (board[x - i][y - i] == currentPlayer) {
+                while (i != 0) {
+                    board[x - i][y - i] = currentPlayer;
+                    i--;
+                }
+                break;
+            }
+        }
+        // right up
+        for (var i = 2; y + i < 8 && x - i > -1; i++) {
+            if (board[x - i][y + i] == currentPlayer) {
+                while (i != 0) {
+                    board[x - i][y + i] = currentPlayer;
+                    i--;
+                }
+                break;
+            }
+        }
+        // down right
+        for (var i = 2; y + i < 8 && x + i < 8; i++) {
+            if (board[x + i][y + i] == currentPlayer) {
+                while (i != 0) {
+                    board[x + i][y + i] = currentPlayer;
+                    i--;
+                }
+                break;
+            }
+        }
+        // down left
+        for (var i = 2; y - i > -1 && x + i < 8; i++) {
+            if (board[x + i][y - i] == currentPlayer) {
+                while (i != 0) {
+                    board[x + i][y - i] = currentPlayer;
+                    i--;
+                }
+                break;
+            }
+        }
+        // switch opponents
+        if (currentPlayer == Color.BLACK) {
+            state.currentPlayer = Color.RED;
+            state.opponent = Color.BLACK;
+        }
+        else {
+            state.currentPlayer = Color.BLACK;
+            state.opponent = Color.RED;
+        }
     }
 
     function isSpaceValid(x, y, board, currentPlayer) {
