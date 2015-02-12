@@ -1,18 +1,21 @@
 Game = (function () {
-    /* Board representing game state.
-     * 0 = empty
-     * 1 = AI Piece
-     * 2 = Player Piece
-     * 3 = Possible Player Moves
-     * 4 = Possible AI Moves
-     */
+    var Color = {
+        EMPTY: 0,
+        RED: 1,
+        BLACK: 2,
+        RED_MOVE: 3,
+        BLACK_MOVE: 4
+    };
+
     var board;
     var currentPlayer;
     var render;
+    var moves;
 
     return {
         init: init,
-        playerMove: playerMove
+        playerMove: playerMove,
+        Color: Color
     };
 
     function init(renderFunc) {
@@ -26,21 +29,28 @@ Game = (function () {
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0]
         ];
-        currentPlayer = 2;
+        currentPlayer = Color.BLACK;
         render = renderFunc;
-        var moves = findMoves();
-        displayMoves(moves);
+        findNewMoves();
+        displayMoves();
         render(board);
     }
 
-    function playerMove(coordX, coordY) {
-        board[coordX][coordY] = 2;
+    function playerMove(coordX, coordY, color) {
+        removeOldMoves();
+        board[coordX][coordY] = color;
+        if (color == Color.BLACK)
+            currentPlayer = Color.RED;
+        else
+            currentPlayer = Color.BLACK;
         /* Make AI Move and Re-Render Board with Player Moves */
+        findNewMoves();
+        displayMoves();
         render(board);
     }
 
-    function findMoves() {
-        var moves = [];
+    function findNewMoves() {
+        moves = [];
         for (var x = 0; x < 8; x++) {
             for (var y = 0; y < 8; y++) {
                 if (board[x][y] != 0) continue;
@@ -49,7 +59,6 @@ Game = (function () {
                 }
             }
         }
-        return moves;
     }
 
     function isSpaceValid(x, y) {
@@ -139,9 +148,17 @@ Game = (function () {
         return testMove;
     }
 
-    function displayMoves(moves) {
+    function displayMoves() {
         moves.forEach(function (move) {
-            board[move[0]][move[1]] = 3;
+            if(currentPlayer == Color.BLACK)
+                board[move[0]][move[1]] = Color.BLACK_MOVE;
+            else
+                board[move[0]][move[1]] = Color.RED_MOVE;
+        });
+    }
+    function removeOldMoves() {
+        moves.forEach(function (move) {
+            board[move[0]][move[1]] = Color.EMPTY;
         });
     }
 })();
