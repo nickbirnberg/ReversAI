@@ -7,19 +7,21 @@ Game = (function () {
         BLACK_MOVE: 4
     };
 
-    var board;
-    var currentPlayer;
     var render;
     var moves;
+
 
     return {
         init: init,
         playerMove: playerMove,
-        Color: Color
+        Color: Color,
+        findNewMoves: findNewMoves,
+        capturePieces: capturePieces
     };
 
     function init(renderFunc) {
-        board = [
+        var currentState;
+        var board = [
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
@@ -29,39 +31,160 @@ Game = (function () {
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0]
         ];
-        currentPlayer = Color.BLACK;
         render = renderFunc;
-        findNewMoves();
-        displayMoves();
-        render(board);
+        currentState = new State();
+        currentState.board = copyBoard(board);
+        currentState.currentPlayer = Color.BLACK;
+        currentState.opponent = Color.RED;
+        findNewMoves(currentState, currentState.currentPlayer);
+        displayMoves(currentState);
+        render(currentState);
     }
 
-    function playerMove(coordX, coordY, color) {
-        removeOldMoves();
-        board[coordX][coordY] = color;
-        if (color == Color.BLACK)
-            currentPlayer = Color.RED;
-        else
-            currentPlayer = Color.BLACK;
-        /* Make AI Move and Re-Render Board with Player Moves */
-        findNewMoves();
-        displayMoves();
-        render(board);
+    function playerMove(coordX, coordY, color, state) {
+        removeOldMoves(state);
+        state.board[coordX][coordY] = color;
+        state.cachedMoves = findNewMoves(state, state.currentPlayer);
+        var newState = capturePieces(coordX, coordY, state);
+        var newMove = bestMove(newState,newState.currentPlayer,4);
+        var renderState = makeAiMove(newMove,newState);
+        renderState.cachedMoves = findNewMoves(renderState, renderState.currentPlayer);
+        displayMoves(renderState);
+        render(renderState);
     }
 
-    function findNewMoves() {
+    function findNewMoves(state, player) {
         moves = [];
         for (var x = 0; x < 8; x++) {
             for (var y = 0; y < 8; y++) {
-                if (board[x][y] != 0) continue;
-                if (isSpaceValid(x, y) == true) {
+                if (state.board[x][y] != 0) continue;
+                if (isSpaceValid(x, y, state.board, player) == true) {
                     moves.push([x, y]);
+                }
+            }
+        }
+        return moves;
+    }
+
+    function makeAiMove(move, state){
+        clearSuggestions(state);
+        state.board[move[0]][move[1]] = state.currentPlayer;
+        var newState = capturePieces(move[0], move[1], state);
+        return newState;
+    }
+
+    function clearSuggestions(state){
+        for (var x = 0; x < 8; x++) {
+            for (var y = 0; y < 8; y++) {
+                if (state.board[x][y] != 1 && state.board[x][y] !=2)
+                {
+                    state.board[x][y] = Color.EMPTY;
                 }
             }
         }
     }
 
-    function isSpaceValid(x, y) {
+    function capturePieces(x, y, state) {
+        var newState = new State();
+        newState.board =  copyBoard(state.board);
+        newState.currentPlayer = state.currentPlayer;
+        newState.opponent = state.opponent;
+        newState.cachedMoves = [];
+        var board = newState.board;
+        var currentPlayer = state.currentPlayer;
+        // left
+        for (var i = 2; y - i > -1; i++) {
+            if (board[x][y - i] == currentPlayer) {
+                while (i != 0) {
+                    board[x][y - i] = currentPlayer;
+                    i--;
+                }
+                break;
+            }
+        }
+        // right
+        for (var i = 2; y + i < 8; i++) {
+            if (board[x][y + i] == currentPlayer) {
+                while (i != 0) {
+                    board[x][y + i] = currentPlayer;
+                    i--;
+                }
+                break;
+            }
+        }
+        // up
+        for (var i = 2; x - i > -1; i++) {
+            if (board[x - i][y] == currentPlayer) {
+                while (i != 0) {
+                    board[x - i][y] = currentPlayer;
+                    i--;
+                }
+                break;
+            }
+        }
+        // down
+        for (var i = 2; x + i < 8; i++) {
+            if (board[x + i][y] == currentPlayer) {
+                while (i != 0) {
+                    board[x + i][y] = currentPlayer;
+                    i--;
+                }
+                break;
+            }
+        }
+        // left up
+        for (var i = 2; y - i > -1 && x - i > -1; i++) {
+            if (board[x - i][y - i] == currentPlayer) {
+                while (i != 0) {
+                    board[x - i][y - i] = currentPlayer;
+                    i--;
+                }
+                break;
+            }
+        }
+        // right up
+        for (var i = 2; y + i < 8 && x - i > -1; i++) {
+            if (board[x - i][y + i] == currentPlayer) {
+                while (i != 0) {
+                    board[x - i][y + i] = currentPlayer;
+                    i--;
+                }
+                break;
+            }
+        }
+        // down right
+        for (var i = 2; y + i < 8 && x + i < 8; i++) {
+            if (board[x + i][y + i] == currentPlayer) {
+                while (i != 0) {
+                    board[x + i][y + i] = currentPlayer;
+                    i--;
+                }
+                break;
+            }
+        }
+        // down left
+        for (var i = 2; y - i > -1 && x + i < 8; i++) {
+            if (board[x + i][y - i] == currentPlayer) {
+                while (i != 0) {
+                    board[x + i][y - i] = currentPlayer;
+                    i--;
+                }
+                break;
+            }
+        }
+        // switch opponents
+        if (currentPlayer == Color.BLACK) {
+            newState.currentPlayer = Color.RED;
+            newState.opponent = Color.BLACK;
+        }
+        else {
+            newState.currentPlayer = Color.BLACK;
+            newState.opponent = Color.RED;
+        }
+        return newState;
+    }
+
+    function isSpaceValid(x, y, board, currentPlayer) {
         var testMove = false;
 
         //test right
@@ -148,17 +271,57 @@ Game = (function () {
         return testMove;
     }
 
-    function displayMoves() {
+    function displayMoves(state) {
         moves.forEach(function (move) {
-            if(currentPlayer == Color.BLACK)
-                board[move[0]][move[1]] = Color.BLACK_MOVE;
+            if(state.currentPlayer == Color.BLACK)
+                state.board[move[0]][move[1]] = Color.BLACK_MOVE;
             else
-                board[move[0]][move[1]] = Color.RED_MOVE;
+                state.board[move[0]][move[1]] = Color.RED_MOVE;
         });
     }
-    function removeOldMoves() {
+    function removeOldMoves(state) {
         moves.forEach(function (move) {
-            board[move[0]][move[1]] = Color.EMPTY;
+            state.board[move[0]][move[1]] = Color.EMPTY;
         });
+    }
+
+    function bestMove(state, player, depth){
+        var moves = miniMax(state, player, depth, 0);
+        return moves[1];
+    }
+
+    function copyBoard(currBoard){
+        var clone = [
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0]
+        ];
+        for (var x = 0; x < 8; x++) {
+            for (var y = 0; y < 8; y++) {
+                clone[x][y] = currBoard[x][y];
+            }
+        }
+        return clone;
     }
 })();
+
+function State() {
+        this.board = [
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0]
+        ];
+        this.currentPlayer= null;
+        this.opponent = null;
+        this.cachedMoves = null;
+    }
