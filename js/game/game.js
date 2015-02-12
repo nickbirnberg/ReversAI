@@ -7,10 +7,9 @@ Game = (function () {
         BLACK_MOVE: 4
     };
 
-    var board;
-    var currentPlayer;
     var render;
     var moves;
+
 
     return {
         init: init,
@@ -19,7 +18,8 @@ Game = (function () {
     };
 
     function init(renderFunc) {
-        board = [
+        var currentState;
+        var board = [
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
@@ -29,39 +29,42 @@ Game = (function () {
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0]
         ];
-        currentPlayer = Color.BLACK;
         render = renderFunc;
-        findNewMoves();
-        displayMoves();
-        render(board);
+        currentState = new State();
+        currentState.board = copyBoard(board);
+        currentState.currentPlayer = Color.BLACK;
+        currentState.opponent = Color.RED;
+        findNewMoves(currentState);
+        displayMoves(currentState);
+        render(currentState);
     }
 
-    function playerMove(coordX, coordY, color) {
-        removeOldMoves();
-        board[coordX][coordY] = color;
+    function playerMove(coordX, coordY, color, state) {
+        removeOldMoves(state);
+        state.board[coordX][coordY] = color;
         if (color == Color.BLACK)
-            currentPlayer = Color.RED;
+            state.currentPlayer = Color.RED;
         else
-            currentPlayer = Color.BLACK;
+            state.currentPlayer = Color.BLACK;
         /* Make AI Move and Re-Render Board with Player Moves */
-        findNewMoves();
-        displayMoves();
-        render(board);
+        findNewMoves(state);
+        displayMoves(state);
+        render(state);
     }
 
-    function findNewMoves() {
+    function findNewMoves(state) {
         moves = [];
         for (var x = 0; x < 8; x++) {
             for (var y = 0; y < 8; y++) {
-                if (board[x][y] != 0) continue;
-                if (isSpaceValid(x, y) == true) {
+                if (state.board[x][y] != 0) continue;
+                if (isSpaceValid(x, y, state.board, state.currentPlayer) == true) {
                     moves.push([x, y]);
                 }
             }
         }
     }
 
-    function isSpaceValid(x, y) {
+    function isSpaceValid(x, y, board, currentPlayer) {
         var testMove = false;
 
         //test right
@@ -148,17 +151,83 @@ Game = (function () {
         return testMove;
     }
 
-    function displayMoves() {
+    function displayMoves(state) {
         moves.forEach(function (move) {
-            if(currentPlayer == Color.BLACK)
-                board[move[0]][move[1]] = Color.BLACK_MOVE;
+            if(state.currentPlayer == Color.BLACK)
+                state.board[move[0]][move[1]] = Color.BLACK_MOVE;
             else
-                board[move[0]][move[1]] = Color.RED_MOVE;
+                state.board[move[0]][move[1]] = Color.RED_MOVE;
         });
     }
-    function removeOldMoves() {
+    function removeOldMoves(state) {
         moves.forEach(function (move) {
-            board[move[0]][move[1]] = Color.EMPTY;
+            state.board[move[0]][move[1]] = Color.EMPTY;
         });
+    }
+
+    function bestMove(state, player, depth){
+        var moves = miniMax(state, player, depth, 0);
+    }
+
+    function copyBoard(currBoard){
+        var clone = [
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0]
+        ];
+        for (var x = 0; x < 8; x++) {
+            for (var y = 0; y < 8; y++) {
+                clone[x][y] = currBoard[x][y];
+            }
+        }
+        return clone;
+    }
+
+    function scoreMove(state){
+
+
+    }
+
+    function numberPieces(state){
+        var c = 0;
+        for (var x = 0; x < 8; x++) {
+            for (var y = 0; y < 8; y++) {
+                if (state.board[x][y] == state.currentPlayer) c++;
+            }
+        }
+        return c;
+    }
+
+    function miniMax(state, currentPlayer, maxDepth, currentDepth){
+        if(currentDepth == maxDepth){
+            return [scoreMove(state),null]
+        }
+        var bestScore;
+        if(state.currentPlayer == currentPlayer){
+            bestScore = -300000;
+        }
+        else{
+            bestScore = 300000;
+        }
     }
 })();
+
+function State() {
+        this.board = [
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0]
+        ];
+        this.currentPlayer= null;
+        this.opponent = null;
+    }
