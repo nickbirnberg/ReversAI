@@ -61,12 +61,14 @@ function init() {
                     piece.setTexture(blackTexture);
                     piece.alpha = 0.3;
                     piece.interactive = true;
-                    piece.mousedown = mouseDownFunc(i, j);
+                    piece.mousedown = mouseDownFunc(i, j, Game.Color.BLACK);
                 }
                 // possible AI move
                 else if (gameBoard[i][j] == Game.Color.RED_MOVE) {
                     piece.setTexture(redTexture);
                     piece.alpha = 0.3;
+                    piece.interactive = true;
+                    piece.mousedown = mouseDownFunc(i, j, Game.Color.RED);
                 }
                 // no piece
                 else {
@@ -76,9 +78,9 @@ function init() {
         }
     }
 
-    function mouseDownFunc(i, j) {
+    function mouseDownFunc(i, j, color) {
         return function () {
-            Game.playerMove(i, j);
+            Game.playerMove(i, j, color);
         };
     }
 }
