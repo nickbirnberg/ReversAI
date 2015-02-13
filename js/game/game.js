@@ -45,10 +45,11 @@ Game = (function () {
         removeOldMoves(state);
         state.board[coordX][coordY] = color;
         state.cachedMoves = findNewMoves(state, state.currentPlayer);
+        var newState = capturePieces(coordX, coordY, state);
         do {
             var userCantPlay =0;
-            var newState = capturePieces(coordX, coordY, state);
-            var newMove = bestMove(newState, newState.currentPlayer, 4);
+
+            var newMove = bestMove(newState, newState.currentPlayer, globalSettings.depth);
             if (newMove != null) {
                 var renderState = makeAiMove(newMove, newState);
                 renderState.cachedMoves = findNewMoves(renderState, renderState.currentPlayer);
