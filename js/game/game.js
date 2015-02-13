@@ -123,85 +123,140 @@ Game = (function () {
         newState.cachedMoves = [];
         var board = newState.board;
         var currentPlayer = state.currentPlayer;
+        var opponent = state.opponent;
         // left
-        for (var i = 2; y - i > -1; i++) {
-            if (board[x][y - i] == currentPlayer) {
-                while (i != 0) {
-                    board[x][y - i] = currentPlayer;
-                    i--;
-                }
-                break;
+        var i = 1;
+        while (y - i > -1) {
+            // Continue checking if we have a player piece
+            if (board[x][y - i] == opponent) {
+                i++;
+                continue;
             }
+            // Break in direction if we don't
+            if (board[x][y - i] != currentPlayer)
+                break;
+            // Capture all pieces in-between
+            while (i != 0) {
+                board[x][y - i] = currentPlayer;
+                i--;
+            }
+            break;
         }
+
         // right
-        for (var i = 2; y + i < 8; i++) {
-            if (board[x][y + i] == currentPlayer) {
-                while (i != 0) {
-                    board[x][y + i] = currentPlayer;
-                    i--;
-                }
-                break;
+        i = 1;
+        while (y + i < 8) {
+            // Continue checking if we have a player piece
+            if (board[x][y + i] == opponent) {
+                i++;
+                continue;
             }
+            // Break in direction if we don't
+            if (board[x][y + i] != currentPlayer)
+                break;
+            // Capture all pieces in-between
+            while (i != 0) {
+                board[x][y + i] = currentPlayer;
+                i--;
+            }
+            break;
         }
+
         // up
-        for (var i = 2; x - i > -1; i++) {
-            if (board[x - i][y] == currentPlayer) {
-                while (i != 0) {
-                    board[x - i][y] = currentPlayer;
-                    i--;
-                }
-                break;
+        i = 1;
+        while (x - i > -1) {
+            // Continue checking if we have a player piece
+            if (board[x - i][y] == opponent) {
+                i++;
+                continue;
             }
+            // Break in direction if we don't
+            if (board[x - i][y] != currentPlayer)
+                break;
+            // Capture all pieces in-between
+            while (i != 0) {
+                board[x - i][y] = currentPlayer;
+                i--;
+            }
+            break;
         }
         // down
-        for (var i = 2; x + i < 8; i++) {
-            if (board[x + i][y] == currentPlayer) {
-                while (i != 0) {
-                    board[x + i][y] = currentPlayer;
-                    i--;
-                }
-                break;
+        i = 1;
+        while (x + i < 8) {
+            // Continue checking if we have a player piece
+            if (board[x + i][y] == opponent) {
+                i++;
+                continue;
             }
+            // Break in direction if we don't
+            if (board[x + i][y] != currentPlayer)
+                break;
+            // Capture all pieces in-between
+            while (i != 0) {
+                board[x + i][y] = currentPlayer;
+                i--;
+            }
+            break;
         }
         // left up
-        for (var i = 2; y - i > -1 && x - i > -1; i++) {
-            if (board[x - i][y - i] == currentPlayer) {
-                while (i != 0) {
-                    board[x - i][y - i] = currentPlayer;
-                    i--;
-                }
-                break;
+        i = 1;
+        while (y - i > -1 && x - i > -1) {
+            if (board[x - i][y - i] == opponent) {
+                i++;
+                continue;
             }
+            if (board[x - i][y - i] != currentPlayer)
+                break;
+            while (i != 0) {
+                board[x - i][y - i] = currentPlayer;
+                i--;
+            }
+            break;
         }
         // right up
-        for (var i = 2; y + i < 8 && x - i > -1; i++) {
-            if (board[x - i][y + i] == currentPlayer) {
-                while (i != 0) {
-                    board[x - i][y + i] = currentPlayer;
-                    i--;
-                }
-                break;
+        i = 1;
+        while (y + i < 8 && x - i > -1) {
+            if (board[x - i][y + i] == opponent) {
+                i++;
+                continue;
             }
+            if (board[x - i][y + i] != currentPlayer)
+                break;
+            while (i != 0) {
+                board[x - i][y + i] = currentPlayer;
+                i--;
+            }
+            break;
         }
         // down right
-        for (var i = 2; y + i < 8 && x + i < 8; i++) {
-            if (board[x + i][y + i] == currentPlayer) {
-                while (i != 0) {
-                    board[x + i][y + i] = currentPlayer;
-                    i--;
-                }
-                break;
+        i = 1;
+        while (y + i < 8 && x + i < 8) {
+            if (board[x + i][y + i] == opponent) {
+                i++;
+                continue;
             }
+            if (board[x + i][y + i] != currentPlayer)
+                break;
+            while (i != 0) {
+                board[x + i][y + i] = currentPlayer;
+                i--;
+            }
+            break;
         }
         // down left
-        for (var i = 2; y - i > -1 && x + i < 8; i++) {
-            if (board[x + i][y - i] == currentPlayer) {
-                while (i != 0) {
-                    board[x + i][y - i] = currentPlayer;
-                    i--;
-                }
-                break;
+        i = 1;
+        while (y - i > -1 && x + i < 8) {
+            if (board[x + i][y - i] == opponent) {
+                i++;
+                continue;
             }
+            if (board[x + i][y - i] != currentPlayer)
+                break;
+            while (i != 0) {
+                board[x + i][y - i] = currentPlayer;
+                i--;
+            }
+            break;
         }
         // switch opponents
         if (currentPlayer == Color.BLACK) {
